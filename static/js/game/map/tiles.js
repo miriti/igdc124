@@ -32,7 +32,7 @@ define(['pixi/pixi', 'core/base', 'res', 'game/anim/windgen'], function (PIXI, B
 
         var sprite = new PIXI.Sprite(res.getTexture('grass-tile'));
         this.addChild(sprite);
-        
+
         this.click = function() {
             this.parent.putTile(this.cellX, this.cellY, new WindGenTile());
         }
@@ -52,7 +52,7 @@ define(['pixi/pixi', 'core/base', 'res', 'game/anim/windgen'], function (PIXI, B
 
     /**
      * Wind gen
-     * 
+     *
      * @constructor
      */
     var WindGenTile = function () {
