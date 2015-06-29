@@ -1,0 +1,13 @@
+{
+  "name": "energo",
+  "version": "1.0.0",
+  "authors": [
+    "Michael Miriti <michael@miriti.ru>"
+  ],
+  "main": "static/index.html",
+  "license": "MIT",
+  "dependencies": {
+    "pixi.js": "~3.0.6",
+    "requirejs": "~2.1.18"
+  }
+}
