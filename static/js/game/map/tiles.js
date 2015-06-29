@@ -1,71 +1,87 @@
-define(['pixi/pixi', 'core/base', 'res', 'game/anim/windgen'], function (PIXI, Base, res, WindgenAnim) {
+define(['pixi/pixi', 'core/base', 'res', 'game/anim/windgen', 'core/shapes'], function (PIXI, Base, res, WindgenAnim, Shapes) {
     /**
      * Tile
      *
      * @constructor
      */
-    var Tile = function () {
+    var Tile = extend(function () {
         Base.GameObject.call(this);
 
         this.buttonMode = true;
         this.interactive = true;
         this.cellX = 0;
         this.cellY = 0;
-    };
+    }, Base.GameObject);
 
     Tile.SIZE = 30;
 
-    extend(Tile, Base.GameObject, {
-        put: function (cellX, cellY) {
-            this.cellX = cellX;
-            this.cellY = cellY;
-        }
-    });
+    Tile.prototype.put = function (cellX, cellY) {
+        this.cellX = cellX;
+        this.cellY = cellY;
+    }
 
     /**
      * Grass
      *
      * @constructor
      */
-    var GrassTile = function () {
+    var Grass = extend(function () {
         Tile.call(this);
 
         var sprite = new PIXI.Sprite(res.getTexture('grass-tile'));
         this.addChild(sprite);
 
         this.click = function() {
-            this.parent.putTile(this.cellX, this.cellY, new WindGenTile());
+            this.parent.putTile(this.cellX, this.cellY, new Windgen());
         }
-    };
-
-    extend(GrassTile, Tile);
+    }, Tile);
 
     /**
      * Wire
      * @constructor
      */
-    var WireTile = function () {
+    var Wire = extend(function (variant) {
         Tile.call(this);
-    };
+        variant = variant || 'h';
+        var sprite = new PIXI.Sprite(res.getTexture('wire-' + variant));
+        this.addChild(sprite);
+    }, Tile);
 
-    extend(WireTile, Tile);
+    /**
+     * Switch
+     */
+    var Switch = extend(function(variant) {
+        Tile.call(this);
+        var sprite = new Shapes.Quad(30, 30, 0xff0000, false);
+        this.addChild(sprite);
+    }, Tile);
+
+    /**
+     * House
+     */
+    var House = extend(function() {
+        Tile.call(this);
+        var sprite = new Shapes.Quad(30, 30, 0xffffff, false);
+        this.addChild(sprite);
+    }, Tile);
 
     /**
      * Wind gen
      *
      * @constructor
      */
-    var WindGenTile = function () {
+    var Windgen = extend(function () {
         Tile.call(this);
 
         this.addChild(new WindgenAnim());
-    };
-
-    extend(WindGenTile, Tile);
+    }, Tile);
 
     return {
         Tile: Tile,
-        GrassTile: GrassTile,
-        WindGenTile: WindGenTile
+        Grass: Grass,
+        Windgen: Windgen,
+        Wire: Wire,
+        Switch: Switch,
+        House: House
     }
 });

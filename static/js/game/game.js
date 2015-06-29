@@ -1,4 +1,4 @@
-define(['pixi/pixi', 'core/base', 'core/shapes', 'game/map/map', 'game/map/tiles'], function (PIXI, Base, shapes, Map, Tiles) {
+define(['pixi/pixi', 'core/base', 'core/shapes', 'game/map/map', 'game/map/town'], function (PIXI, Base, shapes, Map, Town) {
 
     /**
      * Game
@@ -8,9 +8,16 @@ define(['pixi/pixi', 'core/base', 'core/shapes', 'game/map/map', 'game/map/tiles
     var Game = function () {
         Base.GameObject.call(this);
 
-        this.map = new Map(10, 10);
-        this.map.init(20, 20, Tiles.GrassTile);
-        this.addChild(this.map);
+        var map = new Map(10, 10);
+        map = new Map(10, 10);
+        map.scale.set(2);
+        map.init(20, 20);
+
+        var town = new Town(4);
+        town.putOnMap(map, 2, 2);
+
+        this.addChild(map);
+        this.map = map;
 
         this.interactive = true;
         this.drag = null;

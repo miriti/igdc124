@@ -1,4 +1,4 @@
-define(['core/base', 'game/map/tiles'], function (Base, tiles) {
+define(['core/base', 'game/map/tiles'], function (Base, Tiles) {
     /**
      * Map
      *
@@ -9,17 +9,18 @@ define(['core/base', 'game/map/tiles'], function (Base, tiles) {
     var Map = function (cols, rows) {
         Base.GameObject.call(this);
 
+        this.tiles = [];
+
         this.interactive = true;
-
-
-        this.scale.set(2);
     };
 
     extend(Map, Base.GameObject);
 
+    /**
+     * Initialize the map
+     */
     Map.prototype.init = function (cols, rows, InitTile) {
-        this.tiles = [];
-
+        InitTile = InitTile || Tiles.Grass;
         for (var i = 0; i < rows; i++) {
             for (var j = 0; j < cols; j++) {
                 var tile = new InitTile();
@@ -28,6 +29,9 @@ define(['core/base', 'game/map/tiles'], function (Base, tiles) {
         }
     };
 
+    /**
+     * Put a tile on the Map
+     */
     Map.prototype.putTile = function (cellX, cellY, tile) {
         if (typeof this.tiles[cellX] === 'undefined') {
             this.tiles[cellX] = [];
@@ -40,8 +44,8 @@ define(['core/base', 'game/map/tiles'], function (Base, tiles) {
         this.tiles[cellX][cellY].push(tile);
 
         tile.put(cellX, cellY);
-        tile.x = cellX * (tiles.Tile.SIZE);
-        tile.y = cellY * (tiles.Tile.SIZE);
+        tile.x = cellX * (Tiles.Tile.SIZE);
+        tile.y = cellY * (Tiles.Tile.SIZE);
         this.addChild(tile);
     };
 

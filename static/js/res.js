@@ -11,7 +11,6 @@ define(['pixi/pixi'], function (PIXI) {
         .add('windgen-base', 'sprites/windgen-base.png')
         .add('windgen-propeller', 'sprites/windgen-propeller.png');
 
-
     return {
         loader: loader,
         r: loader.resources,
