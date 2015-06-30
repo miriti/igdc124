@@ -6,11 +6,31 @@ define(['pixi/pixi', 'core/base', 'res', 'game/anim/windgen', 'core/shapes'], fu
      */
     var Tile = extend(function () {
         Base.GameObject.call(this);
-
-        this.buttonMode = true;
-        this.interactive = true;
+        this.selectable = false;
+        
         this.cellX = 0;
         this.cellY = 0;
+        
+        var selectFilters = [new PIXI.filters.BloomFilter()];
+
+        this.mousedown = function (e) {
+            if (this.selectable) {
+                this.select();
+                e.stopPropagation();
+            }
+        };
+
+        this.mouseover = function () {
+            if (this.selectable) {
+                this.filters = selectFilters;
+            }
+        };
+
+        this.mouseout = function () {
+            if (this.selectable) {
+                this.filters = null;
+            }
+        }
     }, Base.GameObject);
 
     Tile.SIZE = 30;
@@ -18,7 +38,15 @@ define(['pixi/pixi', 'core/base', 'res', 'game/anim/windgen', 'core/shapes'], fu
     Tile.prototype.put = function (cellX, cellY) {
         this.cellX = cellX;
         this.cellY = cellY;
-    }
+    };
+    
+    Tile.prototype.setSelectable = function(selectable) {
+        this.selectable = this.buttonMode = this.interactive = selectable;
+    };
+
+    Tile.prototype.select = function () {
+
+    };
 
     /**
      * Grass
@@ -31,9 +59,9 @@ define(['pixi/pixi', 'core/base', 'res', 'game/anim/windgen', 'core/shapes'], fu
         var sprite = new PIXI.Sprite(res.getTexture('grass-tile'));
         this.addChild(sprite);
 
-        this.click = function() {
-            this.parent.putTile(this.cellX, this.cellY, new Windgen());
-        }
+        this.click = function () {
+            //this.parent.putTile(this.cellX, this.cellY, new Windgen());
+        };
     }, Tile);
 
     /**
@@ -50,18 +78,26 @@ define(['pixi/pixi', 'core/base', 'res', 'game/anim/windgen', 'core/shapes'], fu
     /**
      * Switch
      */
-    var Switch = extend(function(variant) {
+    var Switch = extend(function (variant) {
         Tile.call(this);
-        var sprite = new Shapes.Quad(30, 30, 0xff0000, false);
+        
+        this.setSelectable(true);
+
+        variant = variant || 'all';
+
+        var sprite = new PIXI.Sprite(res.getTexture('switch-' + variant));
         this.addChild(sprite);
     }, Tile);
 
     /**
      * House
      */
-    var House = extend(function() {
+    var House = extend(function () {
         Tile.call(this);
-        var sprite = new Shapes.Quad(30, 30, 0xffffff, false);
+        
+        this.setSelectable(true);
+        
+        var sprite = new PIXI.Sprite(res.getTexture('house-off'));
         this.addChild(sprite);
     }, Tile);
 

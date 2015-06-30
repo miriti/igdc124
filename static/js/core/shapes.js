@@ -10,10 +10,11 @@ define(['pixi/pixi'], function (PIXI) {
             graph.drawRect(0, 0, quadWidth, quadHeight);
             graph.endFill();
 
-            this.addChild(graph);
-            if(centered) {
-                this.anchor.set(0.5, 0.5);
+            if (centered) {
+                graph.x = -quadWidth / 2;
+                graph.y = -quadHeight / 2;
             }
+            this.addChild(graph);
         }, PIXI.Container)
     }
 });

@@ -6,11 +6,10 @@ define(['core/base', 'game/map/tiles'], function (Base, Tiles) {
      * @param rows
      * @constructor
      */
-    var Map = function (cols, rows) {
+    var Map = function () {
         Base.GameObject.call(this);
 
         this.tiles = [];
-
         this.interactive = true;
     };
 

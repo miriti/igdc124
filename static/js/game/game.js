@@ -1,4 +1,4 @@
-define(['pixi/pixi', 'core/base', 'core/shapes', 'game/map/map', 'game/map/town'], function (PIXI, Base, shapes, Map, Town) {
+define(['pixi/pixi', 'core/base', 'core/shapes', 'core/input', 'game/map/map', 'game/map/town', 'game/hud/hud'], function (PIXI, Base, shapes, Input, Map, Town, HUD) {
 
     /**
      * Game
@@ -10,14 +10,19 @@ define(['pixi/pixi', 'core/base', 'core/shapes', 'game/map/map', 'game/map/town'
 
         var map = new Map(10, 10);
         map = new Map(10, 10);
-        map.scale.set(2);
-        map.init(20, 20);
+        map.scale.set(3);
+        map.init(7, 15);
 
-        var town = new Town(4);
+        map.x = -map.width / 2;
+        map.y = -map.height / 2;
+
+        var town = new Town(6);
         town.putOnMap(map, 2, 2);
 
         this.addChild(map);
         this.map = map;
+
+        this.addChild(new HUD());
 
         this.interactive = true;
         this.drag = null;

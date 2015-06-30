@@ -28,8 +28,16 @@ require(['pixi/pixi', 'gameMain', 'res'], function (PIXI, GameMain, res) {
     var gameMain = new GameMain();
     gameMain.loading();
 
+    var lastTime = new Date().getTime();
+
     function animate() {
-        gameMain.update(1000 / 60); // TODO: Real delta time
+        var currentTime = new Date().getTime();
+        var delta = (currentTime - lastTime) / 1000;
+        if (delta > 1) 
+            delta = 1;
+        gameMain.update(delta);
+        lastTime = currentTime;
+
         renderer.render(gameMain);
         requestAnimationFrame(animate);
     }

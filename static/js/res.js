@@ -8,8 +8,13 @@ define(['pixi/pixi'], function (PIXI) {
         .add('wire-br', 'tiles/wire-br.png')
         .add('wire-bl', 'tiles/wire-bl.png')
         .add('wire-dist', 'tiles/wire-dist.png')
+        .add('switch-all', 'tiles/switch-all.png')
+        .add('switch-h-top', 'tiles/switch-h-top.png')
+        .add('switch-h-bottom', 'tiles/switch-h-bottom.png')
         .add('windgen-base', 'sprites/windgen-base.png')
-        .add('windgen-propeller', 'sprites/windgen-propeller.png');
+        .add('windgen-propeller', 'sprites/windgen-propeller.png')
+        .add('house-on', 'tiles/house-on.png')
+        .add('house-off', 'tiles/house-off.png');
 
     return {
         loader: loader,
