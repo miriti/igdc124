@@ -13,6 +13,14 @@ define(['pixi/pixi'], function (PIXI) {
         }
     };
 
+    GameObject.prototype.resize = function(newScreenWidth, newScreenHeight) {
+        for (var i in this.children) {
+            if (typeof this.children[i]['resize'] === 'function') {
+                this.children[i].resize(newScreenWidth, newScreenHeight);
+            }
+        }
+    }
+
     return {
         GameObject: GameObject
     }

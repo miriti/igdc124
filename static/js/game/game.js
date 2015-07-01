@@ -1,11 +1,20 @@
-define(['pixi/pixi', 'core/base', 'core/shapes', 'core/input', 'game/map/map', 'game/map/town', 'game/hud/hud'], function (PIXI, Base, shapes, Input, Map, Town, HUD) {
+define([
+    'pixi/pixi',
+    'core/base',
+    'core/shapes',
+    'core/input',
+    'game/map/map',
+    'game/map/town',
+    'game/hud/hud',
+    'game/player'
+], function (PIXI, Base, shapes, Input, Map, Town, HUD, Player) {
 
     /**
      * Game
      *
      * @constructor
      */
-    var Game = function () {
+    var Game = extend(function () {
         Base.GameObject.call(this);
 
         var map = new Map(10, 10);
@@ -23,6 +32,8 @@ define(['pixi/pixi', 'core/base', 'core/shapes', 'core/input', 'game/map/map', '
         this.map = map;
 
         this.addChild(new HUD());
+
+        Player.instance.money = 5000;
 
         this.interactive = true;
         this.drag = null;
@@ -44,7 +55,12 @@ define(['pixi/pixi', 'core/base', 'core/shapes', 'core/input', 'game/map/map', '
                 this.drag.mouse = e.data.global.clone();
             }
         };
+    }, Base.GameObject);
+
+    Game.prototype.update = function(delta) {
+        Player.instance.update(delta);
+        Base.GameObject.prototype.update.call(this, delta);
     };
 
-    return extend(Game, Base.GameObject);
+    return Game;
 });

@@ -6,14 +6,12 @@ define(['core/base', 'game/map/tiles'], function (Base, Tiles) {
      * @param rows
      * @constructor
      */
-    var Map = function () {
+    var Map = extend(function () {
         Base.GameObject.call(this);
 
         this.tiles = [];
         this.interactive = true;
-    };
-
-    extend(Map, Base.GameObject);
+    }, Base.GameObject);
 
     /**
      * Initialize the map
@@ -47,6 +45,8 @@ define(['core/base', 'game/map/tiles'], function (Base, Tiles) {
         tile.y = cellY * (Tiles.Tile.SIZE);
         this.addChild(tile);
     };
+
+    Map.prototype.resize = null;
 
     return Map;
 });

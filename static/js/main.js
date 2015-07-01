@@ -33,7 +33,7 @@ require(['pixi/pixi', 'gameMain', 'res'], function (PIXI, GameMain, res) {
     function animate() {
         var currentTime = new Date().getTime();
         var delta = (currentTime - lastTime) / 1000;
-        if (delta > 1) 
+        if (delta > 1)
             delta = 1;
         gameMain.update(delta);
         lastTime = currentTime;
@@ -46,6 +46,7 @@ require(['pixi/pixi', 'gameMain', 'res'], function (PIXI, GameMain, res) {
         renderer.resize(window.innerWidth, window.innerHeight);
         gameMain.x = window.innerWidth / 2;
         gameMain.y = window.innerHeight / 2;
+        gameMain.resize(window.innerWidth, window.innerHeight);
     };
 
     window.onresize();
