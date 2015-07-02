@@ -55,6 +55,17 @@ define([
                 this.drag.mouse = e.data.global.clone();
             }
         };
+
+        Input.instance.setKeyListener(function(key) {
+            if(key == Input.LEFT_ARROW) {}
+
+            if(key == Input.RIGHT_ARROW) {}
+
+            if(key == Input.DOWN_ARROW) {}
+
+            if(key == Input.UP_ARROW) {}
+        });
+
     }, Base.GameObject);
 
     Game.prototype.update = function(delta) {
