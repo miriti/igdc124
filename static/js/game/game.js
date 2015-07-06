@@ -18,15 +18,14 @@ define([
         Base.GameObject.call(this);
 
         var map = new Map(10, 10);
-        map = new Map(10, 10);
         map.scale.set(3);
         map.init(7, 15);
 
         map.x = -map.width / 2;
         map.y = -map.height / 2;
 
-        var town = new Town(6);
-        town.putOnMap(map, 2, 2);
+        var town = new Town(2);
+        town.putOnMap(map, 3, 3);
 
         this.addChild(map);
         this.map = map;

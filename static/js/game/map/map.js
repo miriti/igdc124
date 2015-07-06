@@ -1,4 +1,53 @@
 define(['core/base', 'game/map/tiles'], function (Base, Tiles) {
+    var MapSelection = function () {
+        this.length = 0;
+    };
+
+    MapSelection.prototype.addToSelection = function (tile) {
+        this[this.length.toString()] = tile;
+        this.length++;
+    };
+
+    MapSelection.prototype.contains = function () {
+        for (var i = 0; i < this.length; i++) {
+            for (var j = 0; j < this[i].length; j++) {
+                for (var a in arguments) {
+                    if (this[i][j] instanceof arguments[a]) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    };
+
+    MapSelection.prototype.all = function () {
+        var result = [];
+        for (var i = 0; i < this.length; i++) {
+            if (typeof this[i] !== "undefined") {
+                for (var j = 0; j < this[i].length; j++) {
+                    result.push(this[i][j]);
+                }
+            }
+        }
+
+        return result;
+    };
+
+    MapSelection.prototype.getTypes = function () {
+        var all = this.all();
+        var result = [];
+
+        for (var i in all) {
+            for (var a in arguments) {
+                if (all[i] instanceof arguments[a])
+                    result.push(all[i]);
+            }
+        }
+
+        return result;
+    };
+
     /**
      * Map
      *
@@ -12,6 +61,15 @@ define(['core/base', 'game/map/tiles'], function (Base, Tiles) {
         this.tiles = [];
         this.interactive = true;
     }, Base.GameObject);
+
+    Map.prototype.selectNeighbours = function (cellX, cellY) {
+        var sel = new MapSelection();
+        sel.addToSelection(this.tiles[cellX - 1][cellY]);
+        sel.addToSelection(this.tiles[cellX + 1][cellY]);
+        sel.addToSelection(this.tiles[cellX][cellY + 1]);
+        sel.addToSelection(this.tiles[cellX][cellY - 1]);
+        return sel;
+    };
 
     /**
      * Initialize the map
@@ -44,6 +102,8 @@ define(['core/base', 'game/map/tiles'], function (Base, Tiles) {
         tile.x = cellX * (Tiles.Tile.SIZE);
         tile.y = cellY * (Tiles.Tile.SIZE);
         this.addChild(tile);
+
+        return tile;
     };
 
     Map.prototype.resize = null;
