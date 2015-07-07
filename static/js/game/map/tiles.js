@@ -96,7 +96,8 @@ define(['pixi/pixi', 'core/base', 'res', 'game/anim/windgen', 'core/shapes'], fu
 
     var Connectible = extend(function () {
         Tile.call(this);
-        this.availableConnections = 4;
+        this.availableConnectionsNumber = 4;
+        this.availableConnections = ['top', 'botton', 'left', 'right'];
 
         this.connections = {
             top: null,
@@ -129,7 +130,7 @@ define(['pixi/pixi', 'core/base', 'res', 'game/anim/windgen', 'core/shapes'], fu
             if ((typeof this.connections[cn] !== "function") && (this.connections[cn] !== null)) {
                 connected++;
 
-                if (connected >= this.availableConnections) {
+                if (connected >= this.availableConnectionsNumber) {
                     return false;
                 }
             }
@@ -145,7 +146,7 @@ define(['pixi/pixi', 'core/base', 'res', 'game/anim/windgen', 'core/shapes'], fu
     var Wire = extend(function (variant, connected) {
         Connectible.call(this);
 
-        this.availableConnections = 2;
+        this.availableConnectionsNumber = 2;
 
         this._sprite = null;
 

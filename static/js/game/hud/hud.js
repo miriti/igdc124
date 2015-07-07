@@ -25,13 +25,22 @@ define([
             moneyIndicator.text = '$' + value;
         });
 
+        var zeroFill = function(n) {
+            n = n.toString();
+            if(n.length == 1) {
+                return '0' + n;
+            }
+
+            return n;
+        }
+
         Player.subscribe('time', function(value) {
             var totalMinutes = Math.floor(value);
 
             var hours = Math.floor(totalMinutes / 60);
             var mins = totalMinutes % 60;
 
-            timeIndicator.text = hours + ':' + mins;
+            timeIndicator.text = zeroFill(hours) + ':' + zeroFill(mins);
         });
     }, Base.GameObject);
 
