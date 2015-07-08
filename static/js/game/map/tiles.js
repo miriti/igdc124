@@ -35,6 +35,15 @@ define(['pixi/pixi', 'core/base', 'res', 'game/anim/windgen', 'game/map/tiles/ti
         }
     };
 
+    Connectible.prototype.destroy = function() {
+        for(var pos in this.connections) {
+            if(this.connections[pos] !== null) {
+                this.connections[pos].disconnect(this);
+            }
+        }
+        Tile.prototype.destroy.call(this);
+    };
+
     /**
      * Connect connections
      *
