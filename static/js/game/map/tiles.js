@@ -1,4 +1,20 @@
-define(['pixi/pixi', 'core/base', 'res', 'game/anim/windgen', 'game/map/tiles/tile', 'game/player'], function (PIXI, Base, res, WindgenAnim, Tile, Player) {
+define([
+    'pixi/pixi',
+    'core/base',
+    'res',
+    'game/anim/windgen',
+    'game/map/tiles/tile',
+    'game/map/tiles/connectible',
+    'game/map/tiles/wire',
+    'game/map/tiles/switch'
+], function (PIXI,
+             Base,
+             res,
+             WindgenAnim,
+             Tile,
+             Connectible,
+             Wire,
+             Switch) {
     /**
      * Grass
      *
@@ -16,214 +32,72 @@ define(['pixi/pixi', 'core/base', 'res', 'game/anim/windgen', 'game/map/tiles/ti
     Grass.prototype.destroy = function () {
     };
 
-    var Connectible = extend(function () {
-        Tile.call(this);
-        this.availableConnections = ['top', 'bottom', 'left', 'right'];
-
-        this.connections = {
-            top: null,
-            bottom: null,
-            left: null,
-            right: null
-        };
-    }, Tile);
-
-    Connectible.prototype.removeConnection = function (conn) {
-        var index = this.availableConnections.indexOf(conn);
-        if (index !== -1) {
-            this.availableConnections.splice(index, 1);
-        }
-    };
-
-    Connectible.prototype.destroy = function() {
-        for(var pos in this.connections) {
-            if(this.connections[pos] !== null) {
-                this.connections[pos].disconnect(this);
-            }
-        }
-        Tile.prototype.destroy.call(this);
-    };
-
-    /**
-     * Connect connections
-     *
-     * @param connection
-     */
-    Connectible.prototype.connect = function (connection) {
-        var pos = this.getPosition(connection);
-        if (this.canConnect(pos)) {
-            if (this.connections[pos] == null) {
-                this.connections[pos] = connection;
-                connection.connect(this);
-                this.removeConnection(pos);
-            }
-        }
-    };
-
-    Connectible.prototype.disconnect = function (connection) {
-        var pos = this.getPosition(connection);
-        this.connections[pos] = null;
-        this.availableConnections.push(pos);
-    };
-
-    /**
-     * Is connection available
-     *
-     * @returns {boolean}
-     */
-    Connectible.prototype.canConnect = function (side) {
-        if (side) {
-            return this.availableConnections.length > 0;
-        } else {
-            return !(this.availableConnections.indexOf(side) === -1);
-        }
-    };
-
-    /**
-     * Wire
-     *
-     * @constructor
-     */
-    var Wire = extend(function (variant, connected) {
-        Connectible.call(this);
-
-        this._sprite = null;
-
-        this._sprites = {
-            h: null,
-            v: null,
-            bl: null,
-            tl: null,
-            tr: null,
-            br: null
-        };
-
-        for (var v in this._sprites) {
-            this._sprites[v] = new PIXI.Sprite(res.getTexture('wire-' + v));
-        }
-
-        variant = variant || 'h';
-
-        this.variant = variant;
-        this.connected = connected || false;
-
-    }, Connectible);
-
-    Wire.prototype.put = function (cellX, cellY) {
-        Connectible.prototype.put.call(this, cellX, cellY);
-        this.autoConnect();
-    };
-
-    Wire.prototype.checkBuild = function (map, cellX, cellY) {
-        var wires = map.selectNeighbours(cellX, cellY).getTypes(Wire, Switch);
-
-        if (wires.length > 0) {
-            for (var i in wires) {
-                var pos = wires[i].getPosition(this);
-
-                if (wires[i].canConnect(pos))
-                    return true;
-            }
-        }
-        return false;
-    };
-
-    Wire.prototype.connect = function (connection) {
-        Connectible.prototype.connect.call(this, connection);
-        if (this.availableConnections.length == 2) {
-            this.availableConnections = [];
-        }
-        this.variant = this.getVariant();
-    };
-
-    Wire.prototype.disconnect = function (connection) {
-        Connectible.prototype.disconnect.call(this, connection);
-        this.variant = this.getVariant();
-    };
-
-    Wire.prototype.getVariant = function () {
-        var varinat = '';
-
-        for (var c in this.connections) {
-            if (this.connections[c] !== null) {
-                varinat += c[0];
-            }
-        }
-
-        if (varinat.length == 1) {
-            switch (varinat) {
-                case 'l':
-                case 'r':
-                    return 'h';
-                case 't':
-                case 'b':
-                    return 'v';
-            }
-        }
-
-        return varinat;
-    };
-
-    Wire.prototype.autoConnect = function () {
-        var tiles = this.map.selectNeighbours(this.cellX, this.cellY).getTypes(Wire, Switch);
-
-        for (var i in tiles) {
-            tiles[i].connect(this);
-        }
-    };
-
-    Object.defineProperties(Wire.prototype, {
-        variant: {
-            get: function () {
-                return this._variant;
-            },
-            set: function (variant) {
-                if (this._sprites.hasOwnProperty(variant)) {
-                    if (this._sprite != null) {
-                        this.removeChild(this._sprite);
-                    }
-
-                    this._sprite = this._sprites[variant];
-                    this.addChild(this._sprite);
-                }
-            }
-        }
-    });
-
-    /**
-     * Switch
-     */
-    var Switch = extend(function (variant) {
-        Connectible.call(this);
-
-        variant = variant || 'all';
-
-        var sprite = new PIXI.Sprite(res.getTexture('switch-' + variant));
-        this.addChild(sprite);
-    }, Connectible);
-
     /**
      * House
      */
-    var House = extend(function () {
+    var House = function () {
         Connectible.call(this);
 
         this.availableConnections = ['bottom'];
 
-        var sprite = new PIXI.Sprite(res.getTexture('house-off'));
-        this.addChild(sprite);
-    }, Connectible);
+        this._offSprite = new PIXI.Sprite(res.getTexture('house-off'));
+        this._onSprite = new PIXI.Sprite(res.getTexture('house-on'));
+
+        this._current = null;
+        this._light = false;
+
+        this.light = false;
+
+    };
+
+    extend(House, Connectible);
+
+    Object.defineProperties(House.prototype, {
+        light: {
+            get: function () {
+                return this._light;
+            },
+            set: function (onoff) {
+                if (this._current != null)
+                    this.removeChild(this._current);
+
+                this._current = onoff ? this._onSprite : this._offSprite;
+                this.addChild(this._current);
+            }
+        }
+    });
+
+    House.prototype.consumeEnergy = function (from, amount) {
+        if (amount > 0.2) {
+            if (!this.light) {
+                this.light = true;
+            }
+        } else {
+            if (this.light)
+                this.light = false;
+        }
+    };
 
     /**
      * Wind gen
      *
      * @constructor
      */
-    var Windgen = extend(function () {
-        Tile.call(this);
+    var Windgen = function () {
+        Connectible.call(this);
+
+        this.availableConnections = ['bottom'];
 
         this.addChild(new WindgenAnim());
-    }, Tile);
+    };
+
+    extend(Windgen, Connectible);
+
+    Windgen.prototype.update = function (delta) {
+        Connectible.prototype.update.call(this, delta);
+
+        this.passEnergy(this, 1);
+    };
 
     return {
         Tile: Tile,

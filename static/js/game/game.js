@@ -9,7 +9,16 @@ define([
     'game/hud/hud',
     'game/player',
     'game/playerTools'
-], function (PIXI, Base, shapes, Input, Map, Tiles, Town, HUD, Player, PlayerTools) {
+], function (PIXI,
+             Base,
+             shapes,
+             Input,
+             Map,
+             Tiles,
+             Town,
+             HUD,
+             Player,
+             PlayerTools) {
 
     /**
      * Game

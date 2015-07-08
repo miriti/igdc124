@@ -15,6 +15,16 @@ define(['pixi/pixi', 'core/base', 'game/player'], function (PIXI, Base, Player) 
         this.interactive = true;
         this.buttonMode = true;
 
+        var filters = [new PIXI.filters.BloomFilter(), new PIXI.filters.DropShadowFilter()];
+
+        this.mouseover = function () {
+            this.filters = filters;
+        };
+
+        this.mouseout = function () {
+            this.filters = null;
+        };
+
         this.mousedown = function () {
             if (Player.instance.tool) {
                 Player.instance.tool.down(this);
