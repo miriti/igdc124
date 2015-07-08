@@ -4,10 +4,12 @@ define([
     'core/shapes',
     'core/input',
     'game/map/map',
+    'game/map/tiles',
     'game/map/town',
     'game/hud/hud',
-    'game/player'
-], function (PIXI, Base, shapes, Input, Map, Town, HUD, Player) {
+    'game/player',
+    'game/playerTools'
+], function (PIXI, Base, shapes, Input, Map, Tiles, Town, HUD, Player, PlayerTools) {
 
     /**
      * Game
@@ -35,39 +37,53 @@ define([
         Player.instance.money = 5000;
 
         this.interactive = true;
-        this.drag = null;
 
-        this.mousedown = function (e) {
-            this.drag = {
-                mouse: e.data.global.clone()
-            };
-        };
-
-        this.mouseup = function () {
-            this.drag = null;
-        };
-
-        this.mousemove = function (e) {
-            if (this.drag !== null) {
-                this.map.x += (e.data.global.x - this.drag.mouse.x);
-                this.map.y += (e.data.global.y - this.drag.mouse.y);
-                this.drag.mouse = e.data.global.clone();
+        this.mousemove = function () {
+            if (Player.instance.tool) {
+                Player.instance.tool.move(this.map);
             }
         };
 
-        Input.instance.setKeyListener(function(key) {
-            if(key == Input.LEFT_ARROW) {}
+        Input.instance.setKeyListener(function (key) {
+            if (key == Input.LEFT_ARROW) {
+            }
 
-            if(key == Input.RIGHT_ARROW) {}
+            if (key == Input.RIGHT_ARROW) {
+            }
 
-            if(key == Input.DOWN_ARROW) {}
+            if (key == Input.DOWN_ARROW) {
+            }
 
-            if(key == Input.UP_ARROW) {}
+            if (key == Input.UP_ARROW) {
+            }
+
+            if (key == Input.B) {
+                Player.instance.tool = PlayerTools.Build;
+                console.log('Build->');
+            }
+
+            if (key == Input.M) {
+                Player.instance.tool = PlayerTools.Move;
+            }
+
+            if (key == Input.D) {
+                Player.instance.tool = PlayerTools.Demolition;
+            }
+
+            if (Player.instance.tool.name == 'build') {
+                if (key == Input.W) {
+                    Player.instance.tool.setTile(Tiles.Windgen);
+                }
+
+                if (key == Input.L) {
+                    Player.instance.tool.setTile(Tiles.Wire);
+                }
+            }
         });
 
     }, Base.GameObject);
 
-    Game.prototype.update = function(delta) {
+    Game.prototype.update = function (delta) {
         Player.instance.update(delta);
         Base.GameObject.prototype.update.call(this, delta);
     };

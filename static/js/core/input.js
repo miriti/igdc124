@@ -5,6 +5,7 @@ define(function () {
 
         window.onkeydown = this.keydown.bind(this);
         window.onkeyup = this.keyup.bind(this);
+        window.onmousemove = this.mousemove.bind(this);
     };
 
     Input.BACKSPACE = 8;
@@ -111,8 +112,8 @@ define(function () {
 
     Object.defineProperties(Input, {
         instance: {
-            get: function() {
-                if(Input._instance == null) {
+            get: function () {
+                if (Input._instance == null) {
                     Input._instance = new Input();
                 }
 
@@ -122,6 +123,12 @@ define(function () {
     });
 
     Input.prototype = {
+        Mouse: {
+            x: null,
+            y: null,
+            dx: 0,
+            dy: 0
+        },
         setKeyListener: function (listener) {
             this._listener = listener;
         },
@@ -133,6 +140,13 @@ define(function () {
         },
         keyup: function (e) {
             this.pressedKeys[e.keyCode] = false;
+        },
+        mousemove: function (e) {
+            this.Mouse.dx = this.Mouse.x === null ? 0 : e.screenX - this.Mouse.x;
+            this.Mouse.dy = this.Mouse.y === null ? 0 : e.screenY - this.Mouse.y;
+
+            this.Mouse.x = e.screenX;
+            this.Mouse.y = e.screenY;
         }
     };
 

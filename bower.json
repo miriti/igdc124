@@ -7,7 +7,7 @@
   "main": "static/index.html",
   "license": "MIT",
   "dependencies": {
-    "pixi.js": "~3.0.6",
+    "pixi.js": "~3.0.7",
     "requirejs": "~2.1.18"
   }
 }

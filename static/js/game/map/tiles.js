@@ -1,73 +1,4 @@
-define(['pixi/pixi', 'core/base', 'res', 'game/anim/windgen', 'core/shapes'], function (PIXI, Base, res, WindgenAnim, Shapes) {
-    /**
-     * Tile
-     *
-     * @constructor
-     */
-    var Tile = extend(function () {
-        Base.GameObject.call(this);
-        this.selectable = false;
-
-        this.cellX = 0;
-        this.cellY = 0;
-
-        var selectFilters = [new PIXI.filters.BloomFilter()];
-
-        this.mousedown = function (e) {
-            if (this.selectable) {
-                this.select();
-                e.stopPropagation();
-            }
-        };
-
-        this.mouseover = function () {
-            if (this.selectable) {
-                this.filters = selectFilters;
-            }
-        };
-
-        this.mouseout = function () {
-            if (this.selectable) {
-                this.filters = null;
-            }
-        }
-    }, Base.GameObject);
-
-    Tile.SIZE = 30;
-
-    Tile.prototype.resize = null;
-
-    Tile.prototype.put = function (cellX, cellY) {
-        this.cellX = cellX;
-        this.cellY = cellY;
-    };
-
-    Tile.prototype.setSelectable = function (selectable) {
-        this.selectable = this.buttonMode = this.interactive = selectable;
-    };
-
-    Tile.prototype.select = function () {
-
-    };
-
-    Tile.prototype.getPosition = function (tile) {
-        if (this.cellX == tile.cellX) {
-            if (tile.cellY - this.cellY == 1)
-                return 'bottom';
-            if (tile.cellY - this.cellY == -1)
-                return 'top';
-        }
-
-        if (this.cellY == tile.cellY) {
-            if (tile.cellX - this.cellX == 1)
-                return 'right';
-            if (tile.cellX - this.cellX == -1)
-                return 'left';
-        }
-
-        return null;
-    };
-
+define(['pixi/pixi', 'core/base', 'res', 'game/anim/windgen', 'game/map/tiles/tile', 'game/player'], function (PIXI, Base, res, WindgenAnim, Tile, Player) {
     /**
      * Grass
      *
@@ -76,77 +7,76 @@ define(['pixi/pixi', 'core/base', 'res', 'game/anim/windgen', 'core/shapes'], fu
     var Grass = extend(function () {
         Tile.call(this);
 
-        this.setSelectable(true);
+        this.buildAvailable = true;
 
         var sprite = new PIXI.Sprite(res.getTexture('grass-tile'));
         this.addChild(sprite);
-
-        this.click = function () {
-            var wires = this.parent.selectNeighbours(this.cellX, this.cellY).getTypes(Wire, Switch);
-
-            if (wires.length == 1) {
-                if (wires[0].canConnect()) {
-                    var tile = new Wire();
-                    this.parent.putTile(this.cellX, this.cellY, tile);
-                    wires[0].connect(tile);
-                }
-            }
-        };
     }, Tile);
+
+    Grass.prototype.destroy = function () {
+    };
 
     var Connectible = extend(function () {
         Tile.call(this);
-        this.availableConnectionsNumber = 4;
-        this.availableConnections = ['top', 'botton', 'left', 'right'];
+        this.availableConnections = ['top', 'bottom', 'left', 'right'];
 
         this.connections = {
             top: null,
             bottom: null,
             left: null,
-            right: null,
-            available: function () {
-                for (var i in this) {
-                    if (this[i] === null)
-                        return true;
-                }
-                return false;
-            }
+            right: null
         };
     }, Tile);
 
+    Connectible.prototype.removeConnection = function (conn) {
+        var index = this.availableConnections.indexOf(conn);
+        if (index !== -1) {
+            this.availableConnections.splice(index, 1);
+        }
+    };
+
+    /**
+     * Connect connections
+     *
+     * @param connection
+     */
     Connectible.prototype.connect = function (connection) {
-        if (this.canConnect()) {
-            var conn = this.getPosition(connection);
-            if (this.connections[conn] == null) {
-                this.connections[conn] = connection;
+        var pos = this.getPosition(connection);
+        if (this.canConnect(pos)) {
+            if (this.connections[pos] == null) {
+                this.connections[pos] = connection;
                 connection.connect(this);
+                this.removeConnection(pos);
             }
         }
     };
 
-    Connectible.prototype.canConnect = function () {
-        var connected = 0;
-        for (var cn in this.connections) {
-            if ((typeof this.connections[cn] !== "function") && (this.connections[cn] !== null)) {
-                connected++;
+    Connectible.prototype.disconnect = function (connection) {
+        var pos = this.getPosition(connection);
+        this.connections[pos] = null;
+        this.availableConnections.push(pos);
+    };
 
-                if (connected >= this.availableConnectionsNumber) {
-                    return false;
-                }
-            }
+    /**
+     * Is connection available
+     *
+     * @returns {boolean}
+     */
+    Connectible.prototype.canConnect = function (side) {
+        if (side) {
+            return this.availableConnections.length > 0;
+        } else {
+            return !(this.availableConnections.indexOf(side) === -1);
         }
-
-        return true;
     };
 
     /**
      * Wire
+     *
      * @constructor
      */
     var Wire = extend(function (variant, connected) {
         Connectible.call(this);
-
-        this.availableConnectionsNumber = 2;
 
         this._sprite = null;
 
@@ -170,8 +100,35 @@ define(['pixi/pixi', 'core/base', 'res', 'game/anim/windgen', 'core/shapes'], fu
 
     }, Connectible);
 
+    Wire.prototype.put = function (cellX, cellY) {
+        Connectible.prototype.put.call(this, cellX, cellY);
+        this.autoConnect();
+    };
+
+    Wire.prototype.checkBuild = function (map, cellX, cellY) {
+        var wires = map.selectNeighbours(cellX, cellY).getTypes(Wire, Switch);
+
+        if (wires.length > 0) {
+            for (var i in wires) {
+                var pos = wires[i].getPosition(this);
+
+                if (wires[i].canConnect(pos))
+                    return true;
+            }
+        }
+        return false;
+    };
+
     Wire.prototype.connect = function (connection) {
         Connectible.prototype.connect.call(this, connection);
+        if (this.availableConnections.length == 2) {
+            this.availableConnections = [];
+        }
+        this.variant = this.getVariant();
+    };
+
+    Wire.prototype.disconnect = function (connection) {
+        Connectible.prototype.disconnect.call(this, connection);
         this.variant = this.getVariant();
     };
 
@@ -179,7 +136,7 @@ define(['pixi/pixi', 'core/base', 'res', 'game/anim/windgen', 'core/shapes'], fu
         var varinat = '';
 
         for (var c in this.connections) {
-            if ((typeof this.connections[c] !== "function") && (this.connections[c] !== null)) {
+            if (this.connections[c] !== null) {
                 varinat += c[0];
             }
         }
@@ -199,7 +156,7 @@ define(['pixi/pixi', 'core/base', 'res', 'game/anim/windgen', 'core/shapes'], fu
     };
 
     Wire.prototype.autoConnect = function () {
-        var tiles = this.parent.selectNeighbours(this.cellX, this.cellY).getTypes(Wire, Switch);
+        var tiles = this.map.selectNeighbours(this.cellX, this.cellY).getTypes(Wire, Switch);
 
         for (var i in tiles) {
             tiles[i].connect(this);
@@ -230,8 +187,6 @@ define(['pixi/pixi', 'core/base', 'res', 'game/anim/windgen', 'core/shapes'], fu
     var Switch = extend(function (variant) {
         Connectible.call(this);
 
-        this.setSelectable(true);
-
         variant = variant || 'all';
 
         var sprite = new PIXI.Sprite(res.getTexture('switch-' + variant));
@@ -242,13 +197,13 @@ define(['pixi/pixi', 'core/base', 'res', 'game/anim/windgen', 'core/shapes'], fu
      * House
      */
     var House = extend(function () {
-        Tile.call(this);
+        Connectible.call(this);
 
-        this.setSelectable(true);
+        this.availableConnections = ['bottom'];
 
         var sprite = new PIXI.Sprite(res.getTexture('house-off'));
         this.addChild(sprite);
-    }, Tile);
+    }, Connectible);
 
     /**
      * Wind gen

@@ -16,7 +16,7 @@ define(['pixi/pixi', 'core/base', 'res'], function (PIXI, Base, res) {
     return extend(WindgenAnim, Base.GameObject, {
         update: function (delta) {
             Base.GameObject.prototype.update.call(this, delta);
-            this.propeller.rotation += (Math.PI / 1000) * delta;
+            this.propeller.rotation += (Math.PI) * delta;
         }
     });
 });

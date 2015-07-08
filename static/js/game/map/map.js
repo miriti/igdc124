@@ -62,6 +62,14 @@ define(['core/base', 'game/map/tiles'], function (Base, Tiles) {
         this.interactive = true;
     }, Base.GameObject);
 
+    Map.prototype.removeTile = function (tile) {
+        var index = this.tiles[tile.cellX][tile.cellY].indexOf(tile);
+        if (index !== -1) {
+            this.tiles[tile.cellX][tile.cellY].splice(index, 1);
+            this.removeChild(tile);
+        }
+    };
+
     Map.prototype.selectNeighbours = function (cellX, cellY) {
         var sel = new MapSelection();
         sel.addToSelection(this.tiles[cellX - 1][cellY]);
@@ -98,10 +106,10 @@ define(['core/base', 'game/map/tiles'], function (Base, Tiles) {
 
         this.tiles[cellX][cellY].push(tile);
 
-        tile.put(cellX, cellY);
         tile.x = cellX * (Tiles.Tile.SIZE);
         tile.y = cellY * (Tiles.Tile.SIZE);
         this.addChild(tile);
+        tile.put(cellX, cellY);
 
         return tile;
     };
