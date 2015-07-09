@@ -3,6 +3,10 @@ define([
 ], function (Tile) {
     var Connectible = extend(function () {
         Tile.call(this);
+
+        this._generates = 0;
+        this._consumes = 0;
+
         this.availableConnections = ['top', 'bottom', 'left', 'right'];
 
         this.connections = {
@@ -13,6 +17,11 @@ define([
         };
     }, Tile);
 
+    /**
+     * Delete connection from the list of availbale connections
+     *
+     * @param conn
+     */
     Connectible.prototype.removeConnection = function (conn) {
         var index = this.availableConnections.indexOf(conn);
         if (index !== -1) {
@@ -20,6 +29,9 @@ define([
         }
     };
 
+    /**
+     * When tile is destroyed
+     */
     Connectible.prototype.destroy = function () {
         for (var pos in this.connections) {
             if (this.connections[pos] !== null) {
@@ -45,12 +57,21 @@ define([
         }
     };
 
+    /**
+     * Disconnect connection
+     *
+     * @param connection
+     */
     Connectible.prototype.disconnect = function (connection) {
         var pos = this.getPosition(connection);
         this.connections[pos] = null;
         this.availableConnections.push(pos);
     };
 
+    /**
+     * Connect to nearest possible connection
+     *
+     */
     Connectible.prototype.autoConnect = function () {
         var tiles = this.map.selectNeighbours(this.cellX, this.cellY).getTypes(Connectible);
 
@@ -97,6 +118,25 @@ define([
     Connectible.prototype.consumeEnergy = function (from, amount) {
         this.passEnergy(from, amount);
     };
+
+    Object.defineProperties(Connectible.prototype, {
+        generates: {
+            get: function () {
+                var result = this._generates;
+
+                for (var c in this.connections) {
+                    result += this.connections[c].generates;
+                }
+
+                return result;
+            }
+        },
+        consumes: {
+            get: function () {
+                return this._consumes;
+            }
+        }
+    });
 
     return Connectible;
 });
