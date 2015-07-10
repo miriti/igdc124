@@ -1,4 +1,8 @@
-define(['core/input'], function (Input) {
+define([
+    'core/input',
+    'game/hud/money'
+], function (Input,
+             Money) {
     var Tool = function () {
         this.player = null;
     };
@@ -74,6 +78,11 @@ define(['core/input'], function (Input) {
                 if (newTile.checkBuild(tile.map, tile.cellX, tile.cellY)) {
                     tile.map.putTile(tile.cellX, tile.cellY, newTile);
                     this.player.money -= newTile.buildPrice;
+
+                    var m = new Money(-newTile.buildPrice);
+                    m.x = newTile.x + newTile.width / 2;
+                    m.y = newTile.y + newTile.height / 2;
+                    tile.map.addChild(m);
                 } else {
                     // TODO Show message "Can't build there"
                 }

@@ -1,8 +1,13 @@
 define([
     'res',
-    'game/map/tiles/connectible'
+    'game/map/tiles/connectible',
+    'game/player',
+    'game/hud/money'
 ], function (res,
-             Connectible) {
+             Connectible,
+             Player,
+             Money) {
+
     /**
      * House
      */
@@ -17,6 +22,8 @@ define([
         this._current = null;
         this._light = true;
 
+        this._consumingTime = 0;
+
         this.light = false;
     };
 
@@ -24,7 +31,20 @@ define([
 
     House.prototype.update = function (delta) {
         Connectible.prototype.update.call(this, delta);
-        this.light = this.consume() >= 20;
+
+        if (this.consume() >= 10) {
+            this.light = true;
+            this._consumingTime += delta;
+            if (this._consumingTime >= 1) {
+                Player.instance.money += 5; // TODO Houses should pay once a month
+                this._consumingTime = 0;
+
+                var m = new Money(5);
+                m.x = this.x + this.width / 2;
+                m.y = this.y + this.height / 2;
+                this.parent.addChild(m);
+            }
+        }
     };
 
     Object.defineProperties(House.prototype, {

@@ -9,6 +9,7 @@ define([
         Connectible.call(this);
 
         this.buildPrice = 25;
+        this.resistance = 0.9;
 
         variant = variant || 'all';
 

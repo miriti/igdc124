@@ -7,6 +7,8 @@ define([
         this._generates = 0;
         this._consumes = 0;
 
+        this.resistance = 1;
+
         this.availableConnections = ['top', 'bottom', 'left', 'right'];
 
         this.connections = {
@@ -130,7 +132,7 @@ define([
             }
         }
         // TODO The value is still invalid! Probably we should add variable parameter that decreases the amount of energy
-        return consCount > 0 ? (result / consCount) : result;
+        return result * this.resistance;
     };
 
     Object.defineProperties(Connectible.prototype, {

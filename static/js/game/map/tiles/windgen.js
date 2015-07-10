@@ -1,3 +1,6 @@
+/**
+ * @todo Generators should consume money for maintenance
+ */
 define([
     'res',
     'game/anim/windgen',
