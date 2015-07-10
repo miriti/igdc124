@@ -1,4 +1,10 @@
-define(['pixi/pixi', 'core/base', 'game/player'], function (PIXI, Base, Player) {
+define([
+    'pixi/pixi',
+    'core/base',
+    'game/player'
+], function (PIXI,
+             Base,
+             Player) {
     /**
      * Tile
      *
@@ -8,6 +14,7 @@ define(['pixi/pixi', 'core/base', 'game/player'], function (PIXI, Base, Player) 
         Base.GameObject.call(this);
 
         this.buildAvailable = false;
+        this.buildPrice = 0;
 
         this.cellX = 0;
         this.cellY = 0;
@@ -19,6 +26,7 @@ define(['pixi/pixi', 'core/base', 'game/player'], function (PIXI, Base, Player) 
 
         this.mouseover = function () {
             this.filters = filters;
+            // TODO Show object to build if it is possible or "forbidden to build" indicator
         };
 
         this.mouseout = function () {

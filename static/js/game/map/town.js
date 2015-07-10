@@ -13,10 +13,10 @@ define(['core/base', 'game/map/tiles'], function (Base, Tiles) {
         for (var i = tileX + 1; i <= tileX + this.houseCount; i++) {
             this.townTiles.push(map.putTile(i, tileY, new Tiles.House()));
 
-            this.townTiles.push(map.putTile(i, tileY + 1, new Tiles.Switch('h-top')));
+            this.townTiles.push(map.putTile(i, tileY + 1, new Tiles.Switch((i == tileX + this.houseCount) ? 'lt' : 'h-top')));
 
             this.townTiles.push(map.putTile(i, tileY + 2, new Tiles.House()));
-            this.townTiles.push(map.putTile(i, tileY + 3, new Tiles.Switch('h-top')));
+            this.townTiles.push(map.putTile(i, tileY + 3, new Tiles.Switch((i == tileX + this.houseCount) ? 'lt' : 'h-top')));
         }
 
         this.townTiles.push(map.putTile(tileX, tileY + 1, new Tiles.Switch('all')));

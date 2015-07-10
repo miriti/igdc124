@@ -37,6 +37,9 @@ define([
 
         var town = new Town(2);
         town.putOnMap(map, 3, 3);
+        
+        var town2 = new Town(4);
+        town2.putOnMap(map, 8, 3);
 
         this.addChild(map);
         this.map = map;
@@ -86,6 +89,10 @@ define([
 
                 if (key == Input.L) {
                     Player.instance.tool.setTile(Tiles.Wire);
+                }
+
+                if (key == Input.S) {
+                    Player.instance.tool.setTile(Tiles.Switch);
                 }
             }
         });

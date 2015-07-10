@@ -11,6 +11,7 @@ define(['pixi/pixi'], function (PIXI) {
         .add('switch-all', 'tiles/switch-all.png')
         .add('switch-h-top', 'tiles/switch-h-top.png')
         .add('switch-h-bottom', 'tiles/switch-h-bottom.png')
+        .add('switch-lt', 'tiles/switch-lt.png')
         .add('windgen-base', 'sprites/windgen-base.png')
         .add('windgen-propeller', 'sprites/windgen-propeller.png')
         .add('house-on', 'tiles/house-on.png')

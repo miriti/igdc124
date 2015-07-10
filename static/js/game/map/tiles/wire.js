@@ -10,6 +10,8 @@ define([
      */
     var Wire = function (variant, connected) {
         Connectible.call(this);
+        
+        this.buildPrice = 10;
 
         this._sprite = null;
 
@@ -34,11 +36,6 @@ define([
     };
 
     extend(Wire, Connectible);
-
-    Wire.prototype.put = function (cellX, cellY) {
-        Connectible.prototype.put.call(this, cellX, cellY);
-        this.autoConnect();
-    };
 
     Wire.prototype.checkBuild = function (map, cellX, cellY) {
         var wires = map.selectNeighbours(cellX, cellY).getTypes(Connectible);

@@ -17,6 +17,11 @@ define([
         };
     }, Tile);
 
+    Connectible.prototype.put = function (cellX, cellY) {
+        Tile.prototype.put.call(this, cellX, cellY);
+        this.autoConnect();
+    };
+
     /**
      * Delete connection from the list of availbale connections
      *
@@ -97,40 +102,38 @@ define([
         }
     };
 
-    Connectible.prototype.passEnergy = function (from, amount) {
-        var topass = [];
+    Connectible.prototype.consume = function () {
+        var totalEnergy = 0;
 
-        for (var side in this.connections) {
-            var cn = this.connections[side];
-
-            if ((cn !== null) && (cn !== from)) {
-                topass.push(cn);
+        for (var c in this.connections) {
+            if (this.connections[c] != null) {
+                totalEnergy += this.connections[c].generatesFor(this);
             }
         }
 
-        if (topass.length > 0) {
-            for (var i in topass) {
-                topass[i].consumeEnergy(this, amount / topass.length);
-            }
-        }
+        return totalEnergy;
     };
 
-    Connectible.prototype.consumeEnergy = function (from, amount) {
-        this.passEnergy(from, amount);
+    Connectible.prototype.generatesFor = function (connection) {
+        var result = this._generates;
+        var consCount = 0;
+
+        for (var c in this.connections) {
+            if ((this.connections[c] != null) && (this.connections[c] != connection)) {
+
+                var g = this.connections[c].generatesFor(this);
+                if (g > 0) {
+                    result += g;
+                } else {
+                    consCount++;
+                }
+            }
+        }
+        // TODO The value is still invalid! Probably we should add variable parameter that decreases the amount of energy
+        return consCount > 0 ? (result / consCount) : result;
     };
 
     Object.defineProperties(Connectible.prototype, {
-        generates: {
-            get: function () {
-                var result = this._generates;
-
-                for (var c in this.connections) {
-                    result += this.connections[c].generates;
-                }
-
-                return result;
-            }
-        },
         consumes: {
             get: function () {
                 return this._consumes;

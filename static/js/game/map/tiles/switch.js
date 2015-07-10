@@ -8,6 +8,8 @@ define([
     var Switch = function (variant) {
         Connectible.call(this);
 
+        this.buildPrice = 25;
+
         variant = variant || 'all';
 
         switch (variant) {
@@ -16,6 +18,9 @@ define([
                 break;
             case 'h-bottom':
                 this.availableConnections = ['left', 'bottom', 'right'];
+                break;
+            case 'lt':
+                this.availableConnections = ['left', 'top'];
                 break;
         }
 

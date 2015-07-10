@@ -1,6 +1,6 @@
 define(['core/input'], function (Input) {
     var Tool = function () {
-
+        this.player = null;
     };
 
     Tool.prototype = {
@@ -66,13 +66,19 @@ define(['core/input'], function (Input) {
     Build.prototype.down = function (tile) {
         if ((tile.buildAvailable) && (this.Tile !== null)) {
             var newTile = new this.Tile();
-            newTile.cellX = tile.cellX;
-            newTile.cellY = tile.cellY;
+            console.log(newTile.buildPrice, this.player.money);
+            if (newTile.buildPrice <= this.player.money) {
+                newTile.cellX = tile.cellX;
+                newTile.cellY = tile.cellY;
 
-            if (newTile.checkBuild(tile.map, tile.cellX, tile.cellY)) {
-                tile.map.putTile(tile.cellX, tile.cellY, newTile);
+                if (newTile.checkBuild(tile.map, tile.cellX, tile.cellY)) {
+                    tile.map.putTile(tile.cellX, tile.cellY, newTile);
+                    this.player.money -= newTile.buildPrice;
+                } else {
+                    // TODO Show message "Can't build there"
+                }
             } else {
-                console.log('cant build there');
+                // TODO "Not enough money" message should be displayed here
             }
         }
     };

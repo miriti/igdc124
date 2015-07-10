@@ -99,8 +99,10 @@ define(['game/playerTools'], function (Tools) {
                 if (setTool !== this._tool) {
                     if (this._tool !== null) {
                         this._tool.dropped();
+                        this._tool.player = null;
                     }
                     this._tool = setTool;
+                    this._tool.player = this;
                     this._tool.choosen();
                     console.log('Tool:', this._tool.name);
                 }
