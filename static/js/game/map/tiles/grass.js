@@ -8,14 +8,16 @@ define([
      *
      * @constructor
      */
-    var Grass = extend(function () {
+    var Grass = function () {
         Tile.call(this);
 
         this.buildAvailable = true;
 
         var sprite = new PIXI.Sprite(res.getTexture('grass-tile'));
         this.addChild(sprite);
-    }, Tile);
+    };
+
+    extend(Grass, Tile);
 
     Grass.prototype.destroy = function () {
     };

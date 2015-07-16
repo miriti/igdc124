@@ -1,8 +1,10 @@
 define([
     'pixi/pixi',
+    'res',
     'core/base',
     'game/player'
 ], function (PIXI,
+             res,
              Base,
              Player) {
     /**
@@ -10,7 +12,7 @@ define([
      *
      * @constructor
      */
-    var Tile = extend(function () {
+    var Tile = function () {
         Base.GameObject.call(this);
 
         this.buildAvailable = false;
@@ -24,13 +26,28 @@ define([
 
         var filters = [new PIXI.filters.BloomFilter(), new PIXI.filters.DropShadowFilter()];
 
+        this.overlay = null;
+
         this.mouseover = function () {
-            this.filters = filters;
-            // TODO Show object to build if it is possible or "forbidden to build" indicator
+            //this.filters = filters;
+            if (Player.instance.tool) {
+                Player.instance.tool.over(this);
+
+                if (Player.instance.tool.sprite !== null) {
+                    if (this.overlay != null) {
+                        this.removeChild(this.overlay);
+                    }
+                    this.overlay = Player.instance.tool.sprite;
+                    this.addChild(this.overlay);
+                }
+            }
         };
 
         this.mouseout = function () {
-            this.filters = null;
+            //this.filters = null;
+            if (this.overlay != null) {
+                this.removeChild(this.overlay);
+            }
         };
 
         this.mousedown = function () {
@@ -44,7 +61,9 @@ define([
                 Player.instance.tool.up(this);
             }
         };
-    }, Base.GameObject);
+    };
+
+    extend(Tile, Base.GameObject);
 
     Tile.SIZE = 30;
 

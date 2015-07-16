@@ -3,10 +3,10 @@
  */
 define([
     'res',
-    'game/anim/windgen',
+    'pixi/pixi',
     'game/map/tiles/connectible'
 ], function (res,
-             WindgenAnim,
+             PIXI,
              Connectible) {
     /**
      * Wind gen
@@ -21,10 +21,23 @@ define([
 
         this.availableConnections = ['bottom'];
 
-        this.addChild(new WindgenAnim());
+        this.addChild(new PIXI.Sprite(res.getTexture('windgen-base')));
+
+        var propeller = new PIXI.Sprite(res.getTexture('windgen-prop'));
+        propeller.anchor.set(0.5, 0.5);
+
+        propeller.x = this.width / 2;
+        this.addChild(propeller);
+
+        this.propeller = propeller;
     };
 
     extend(Windgen, Connectible);
+
+    Windgen.prototype.update = function (delta) {
+        Connectible.prototype.update.call(this, delta);
+        this.propeller.rotation += Math.PI * delta;
+    };
 
     return Windgen;
 });

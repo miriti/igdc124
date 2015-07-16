@@ -7,8 +7,10 @@ define([
         var Money = function (val) {
             Base.GameObject.call(this);
 
-            var text = new PIXI.Text((val > 0 ? '+' : '-') + '$' + val, {
-                font: "8px monospace bold",
+            this.interactive = false;
+
+            var text = new PIXI.Text((val > 0 ? '+' : '-') + '$' + Math.abs(val), {
+                font: "12px monospace",
                 fill: val > 0 ? '#0f0' : '#f00'
             });
             text.anchor.set(0.5, 0.5);

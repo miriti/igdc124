@@ -97,6 +97,7 @@ define([
      * @returns {boolean}
      */
     Connectible.prototype.canConnect = function (side) {
+        // TODO Detect circular connections!
         if (side) {
             return !(this.availableConnections.indexOf(side) === -1);
         } else {

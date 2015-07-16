@@ -1,10 +1,15 @@
 define([
+    'pixi/pixi',
+    'res',
     'core/input',
     'game/hud/money'
-], function (Input,
+], function (PIXI,
+             res,
+             Input,
              Money) {
     var Tool = function () {
         this.player = null;
+        this.sprite = null;
     };
 
     Tool.prototype = {
@@ -18,6 +23,8 @@ define([
         up: function (tile) {
         },
         move: function (map) {
+        },
+        over: function (tile) {
         }
     };
 
@@ -57,20 +64,43 @@ define([
         }
     };
 
-    var Build = extend(function () {
+    var Build = function () {
         Tool.call(this);
         this.Tile = null;
         this.name = 'build';
-    }, Tool);
+        this._forbinned = null;
+    };
+
+    extend(Build, Tool);
 
     Build.prototype.choosen = function () {
         this.Tile = null;
     };
 
+    Build.prototype.over = function (tile) {
+        if ((tile.buildAvailable) && (this.Tile !== null)) {
+            var newTile = new this.Tile();
+            if (newTile.buildPrice <= this.player.money) {
+                newTile.cellX = tile.cellX;
+                newTile.cellY = tile.cellY;
+
+                if (newTile.checkBuild(tile.map, tile.cellX, tile.cellY)) {
+                    this.sprite = this._buldTile;
+                    return;
+                }
+            }
+        }
+
+        if (this._forbinned == null) {
+            this._forbinned = new PIXI.Sprite(res.getTexture('forbidden'));
+            this._forbinned.alpha = 0.5;
+        }
+        this.sprite = this._forbinned;
+    };
+
     Build.prototype.down = function (tile) {
         if ((tile.buildAvailable) && (this.Tile !== null)) {
             var newTile = new this.Tile();
-            console.log(newTile.buildPrice, this.player.money);
             if (newTile.buildPrice <= this.player.money) {
                 newTile.cellX = tile.cellX;
                 newTile.cellY = tile.cellY;
@@ -94,6 +124,12 @@ define([
 
     Build.prototype.setTile = function (TileType) {
         this.Tile = TileType;
+
+        var t = new TileType();
+        t.interactive = false;
+        t.alpha = 0.5;
+
+        this._buldTile = t;
     };
 
     /**

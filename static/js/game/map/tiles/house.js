@@ -35,7 +35,7 @@ define([
         if (this.consume() >= 10) {
             this.light = true;
             this._consumingTime += delta;
-            if (this._consumingTime >= 1) {
+            if (this._consumingTime >= 10) {
                 Player.instance.money += 5; // TODO Houses should pay once a month
                 this._consumingTime = 0;
 

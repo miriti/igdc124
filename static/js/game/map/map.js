@@ -70,12 +70,19 @@ define(['core/base', 'game/map/tiles'], function (Base, Tiles) {
         }
     };
 
+    Map.prototype.getTile = function (cellX, cellY) {
+        if (this.tiles[cellX] && this.tiles[cellY]) {
+            return this.tiles[cellX][cellY];
+        }
+        return null;
+    };
+
     Map.prototype.selectNeighbours = function (cellX, cellY) {
         var sel = new MapSelection();
-        sel.addToSelection(this.tiles[cellX - 1][cellY]);
-        sel.addToSelection(this.tiles[cellX + 1][cellY]);
-        sel.addToSelection(this.tiles[cellX][cellY + 1]);
-        sel.addToSelection(this.tiles[cellX][cellY - 1]);
+        if (this.getTile(cellX - 1, cellY)) sel.addToSelection(this.tiles[cellX - 1][cellY]);
+        if (this.getTile(cellX + 1, cellY)) sel.addToSelection(this.tiles[cellX + 1][cellY]);
+        if (this.getTile(cellX, cellY + 1)) sel.addToSelection(this.tiles[cellX][cellY + 1]);
+        if (this.getTile(cellX, cellY - 1)) sel.addToSelection(this.tiles[cellX][cellY - 1]);
         return sel;
     };
 

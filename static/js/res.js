@@ -12,10 +12,11 @@ define(['pixi/pixi'], function (PIXI) {
         .add('switch-h-top', 'tiles/switch-h-top.png')
         .add('switch-h-bottom', 'tiles/switch-h-bottom.png')
         .add('switch-lt', 'tiles/switch-lt.png')
-        .add('windgen-base', 'sprites/windgen-base.png')
-        .add('windgen-propeller', 'sprites/windgen-propeller.png')
+        .add('windgen-base', 'tiles/windgen-base.png')
+        .add('windgen-prop', 'tiles/windgen-prop.png')
         .add('house-on', 'tiles/house-on.png')
-        .add('house-off', 'tiles/house-off.png');
+        .add('house-off', 'tiles/house-off.png')
+        .add('forbidden', 'tiles/forbidden.png');
 
     return {
         loader: loader,
